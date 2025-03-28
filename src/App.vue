@@ -17,36 +17,30 @@ const todos_asc = computed(() => todos.value.sort((a, b) => {
   return b.createdAt - a.createdAt;
 }));
 
-// Função para buscar todas as tarefas
 const fetchTodos = async () => {
   try {
     const response = await axios.get('http://localhost:3000/todo');
-    todos.value = response.data;  // Atualiza a lista de tarefas no frontend
+    todos.value = response.data;  
   } catch (error) {
     console.error('Erro ao buscar tarefas:', error);
   }
 };
 
 const addTodo = async () => {
-  // Verifica se os campos de entrada não estão vazios
   if (input_content.value.trim() === '' || input_category.value === null) {
     return;
   }
 
-  // Cria o novo todo com os campos renomeados para corresponder ao esperado pelo backend
   const newTodo = {
-    tarefa: input_content.value,  // Renomeado para 'tarefa'
-    type: input_category.value,   // Renomeado para 'type'
-    done: false,                  // Inicializando como não feito
-    createdAt: new Date().getTime() // Data de criação
+    tarefa: input_content.value,  
+    type: input_category.value,   
+    done: false,                
+    createdAt: new Date().getTime() 
   };
 
   try {
-    // Enviar a requisição POST para a API
     await axios.post('http://localhost:3000/todo', newTodo);
     console.log('Tarefa adicionada com sucesso');
-    
-    // Atualiza a lista de tarefas chamando o GET
     fetchTodos();
   } catch (error) {
     console.error('Erro ao adicionar tarefa:', error);
@@ -55,9 +49,9 @@ const addTodo = async () => {
 
 const removeTodo = async (todo) => {
   try {
-    // Enviar requisição DELETE para remover a tarefa
+
     await axios.delete(`http://localhost:3000/todo/${todo._id}`);
-    todos.value = todos.value.filter(t => t._id !== todo._id); // Remove a tarefa da lista
+    todos.value = todos.value.filter(t => t._id !== todo._id); 
   } catch (error) {
     console.error('Erro ao deletar tarefa:', error);
   }
@@ -71,11 +65,10 @@ watch(nome, (newVal) => {
   localStorage.setItem('nome', newVal);
 });
 
-// Carrega as tarefas quando o componente é montado
 onMounted(() => {
   nome.value = localStorage.getItem('nome') || '';
   todos.value = JSON.parse(localStorage.getItem('todos')) || [];
-  fetchTodos();  // Chama para carregar as tarefas do servidor
+  fetchTodos();  
 });
 </script>
 
@@ -120,11 +113,11 @@ onMounted(() => {
           <div v-for="todo in todos_asc" :key="todo._id" :class="['todo-item', todo.done && 'done']">
             <label>
               <input type="checkbox" v-model="todo.done"/>
-              <span :class="['bubble', todo.type]"></span> <!-- Alterei para 'type' que é a categoria -->
+              <span :class="['bubble', todo.type]"></span> 
             </label>
 
             <div class="todo-content">
-              <input type="text" v-model="todo.tarefa"/> <!-- Alterei para 'tarefa' que é o nome do campo -->
+              <input type="text" v-model="todo.tarefa"/> 
             </div>
 
             <div class="actions">
