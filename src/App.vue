@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue';
-import axios from 'axios';
+import axios from 'axios'; 
 
 const showGreeting = ref(true);
 const todos = ref([]);
@@ -17,40 +17,35 @@ const todos_asc = computed(() => todos.value.sort((a, b) => {
   return b.createdAt - a.createdAt;
 }));
 
+
 const addTodo = async () => {
   if (input_content.value.trim() === '' || input_category.value === null) {
     return;
   }
-
-
-  const newTodo = {
-    content: input_content.value,
-    category: input_category.value,
-    done: false,
-  };
-
+  
   try {
+    const newTodo = {
+      content: input_content.value,
+      category: input_category.value,
+      done: false
+    };
 
+   
     const response = await axios.post('https://api-todolist-meih.onrender.com/todo', newTodo);
-
-
-    todos.value.push(response.data);  
-
-
-    input_content.value = '';
-    input_category.value = null;
+    todos.value.push(response.data); 
+    input_content.value = ''; 
+    input_category.value = null; 
   } catch (error) {
     console.error('Erro ao adicionar tarefa:', error);
   }
 };
 
+
 const removeTodo = async (todo) => {
   try {
-
+  
     await axios.delete(`https://api-todolist-meih.onrender.com/todo/${todo._id}`);
-
-
-    todos.value = todos.value.filter(t => t._id !== todo._id);
+    todos.value = todos.value.filter(t => t._id !== todo._id); 
   } catch (error) {
     console.error('Erro ao deletar tarefa:', error);
   }
@@ -85,20 +80,20 @@ onMounted(() => {
           <input type="text" placeholder="ex. estudar JavaScript" v-model="input_content" />
 
           <h4>Escolha uma categoria</h4>
-          <div class="options"> 
+          <div class="options">
             <label>
-              <input type="radio" name="category" id="category-negocios" value="negocios" v-model="input_category">
+              <input type="radio" name="category" value="negocios" v-model="input_category">
               <span class="bubble negocios"></span>
               <div>Negócios</div>
             </label>
 
             <label>
-              <input type="radio" name="category" id="category-pessoal" value="pessoal" v-model="input_category">
+              <input type="radio" name="category" value="pessoal" v-model="input_category">
               <span class="bubble pessoal"></span>
               <div>Pessoal</div>
             </label>
 
-            <div>Categoria Selecionada: {{ input_category }}</div> 
+            <div>Categoria Selecionada: {{ input_category }}</div>
           </div>
 
           <input type="submit" value="Add todo"/>
@@ -131,3 +126,4 @@ onMounted(() => {
 <style scoped>
 
 </style>
+
