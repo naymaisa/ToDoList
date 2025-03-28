@@ -1,8 +1,8 @@
-
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue';
+import axios from 'axios';
 
-const showGreeting = ref(true); 
+const showGreeting = ref(true);
 const todos = ref([]);
 const nome = ref('');
 const input_content = ref('');
@@ -17,20 +17,43 @@ const todos_asc = computed(() => todos.value.sort((a, b) => {
   return b.createdAt - a.createdAt;
 }));
 
-const addTodo = () => {
+const addTodo = async () => {
   if (input_content.value.trim() === '' || input_category.value === null) {
     return;
   }
-  todos.value.push({
-    content: input_content.value,  
+
+
+  const newTodo = {
+    content: input_content.value,
     category: input_category.value,
     done: false,
-    createdAt: new Date().getTime()
-  });
+  };
+
+  try {
+
+    const response = await axios.post('https://api-todolist-meih.onrender.com/todo', newTodo);
+
+
+    todos.value.push(response.data);  
+
+
+    input_content.value = '';
+    input_category.value = null;
+  } catch (error) {
+    console.error('Erro ao adicionar tarefa:', error);
+  }
 };
 
-const removeTodo = (todo) => {
-  todos.value = todos.value.filter(t => t !== todo);
+const removeTodo = async (todo) => {
+  try {
+
+    await axios.delete(`https://api-todolist-meih.onrender.com/todo/${todo._id}`);
+
+
+    todos.value = todos.value.filter(t => t._id !== todo._id);
+  } catch (error) {
+    console.error('Erro ao deletar tarefa:', error);
+  }
 };
 
 watch(todos, newVal => {
@@ -38,7 +61,7 @@ watch(todos, newVal => {
 }, { deep: true });
 
 watch(nome, (newVal) => {
-  localStorage.setItem('nome', newVal); 
+  localStorage.setItem('nome', newVal);
 });
 
 onMounted(() => {
@@ -50,11 +73,7 @@ onMounted(() => {
 <template>
   <div>
     <section v-if="showGreeting" class="greeting">
-      <h2 class="title">
-        Como vai você, 
-        <input type="text" placeholder="escreva seu nome" v-model="nome" />
-      </h2>
-      <p class="welcome">Seja bem-vindo ao seu gerenciador de tarefas! Preencha seu nome e clique no botão abaixo para começar.</p>
+      <p class="welcome">Seja bem-vindo ao seu gerenciador de tarefas! Clique no botão abaixo para começar.</p>
       <button class="start" @click="startTodoList">Iniciar Tarefas</button>
     </section>
 
@@ -89,7 +108,7 @@ onMounted(() => {
       <section class="todo-list">
         <h3>TODO LIST</h3>
         <div class="list">
-          <div v-for="todo in todos_asc" :key="todo.createdAt" :class="['todo-item', todo.done && 'done']">
+          <div v-for="todo in todos_asc" :key="todo._id" :class="['todo-item', todo.done && 'done']">
             <label>
               <input type="checkbox" v-model="todo.done"/>
               <span :class="['bubble', todo.category]"></span>

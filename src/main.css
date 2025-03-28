@@ -84,31 +84,12 @@ button:hover {
     background-color: var(--primary);
 }
 
-h2.title {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-}
 
 .app {
     padding: 20px;
 }
 
-.greeting .title {
-    display: flex;
-}
 
-.greeting .title input {
-    margin-left: 0.5rem;
-    flex: 1 1 0%;
-    min-width: 0;
-}
-
-.greeting .title,
-.greeting .title input {
-    color: var(--dark);
-    font-size: 1.5rem;
-    font-weight: 700;
-}
 
 h3,
 h4 {
