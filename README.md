@@ -1,3 +1,28 @@
+Para rodar o projeto e necessário rodar a api que esta no repositorio : https://github.com/naymaisa/API_ToDoList
+
+Favor verificar se a Api está abrindo no localHost: http://localhost:3000
+Caso não esteja favor alterar o get, post e delete no arquivo: App.vue
+
+ Pacotes necessários para rodar: Vite, vue, node.js, express.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # ToDoList
 
 This template should help get you started developing with Vue 3 in Vite.
