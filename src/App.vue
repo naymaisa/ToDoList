@@ -17,35 +17,47 @@ const todos_asc = computed(() => todos.value.sort((a, b) => {
   return b.createdAt - a.createdAt;
 }));
 
+// Função para buscar todas as tarefas
+const fetchTodos = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/todo');
+    todos.value = response.data;  // Atualiza a lista de tarefas no frontend
+  } catch (error) {
+    console.error('Erro ao buscar tarefas:', error);
+  }
+};
 
 const addTodo = async () => {
+  // Verifica se os campos de entrada não estão vazios
   if (input_content.value.trim() === '' || input_category.value === null) {
     return;
   }
-  
-  try {
-    const newTodo = {
-      content: input_content.value,
-      category: input_category.value,
-      done: false
-    };
 
-   
-    const response = await axios.post('https://api-todolist-meih.onrender.com/todo', newTodo);
-    todos.value.push(response.data); 
-    input_content.value = ''; 
-    input_category.value = null; 
+  // Cria o novo todo com os campos renomeados para corresponder ao esperado pelo backend
+  const newTodo = {
+    tarefa: input_content.value,  // Renomeado para 'tarefa'
+    type: input_category.value,   // Renomeado para 'type'
+    done: false,                  // Inicializando como não feito
+    createdAt: new Date().getTime() // Data de criação
+  };
+
+  try {
+    // Enviar a requisição POST para a API
+    await axios.post('http://localhost:3000/todo', newTodo);
+    console.log('Tarefa adicionada com sucesso');
+    
+    // Atualiza a lista de tarefas chamando o GET
+    fetchTodos();
   } catch (error) {
     console.error('Erro ao adicionar tarefa:', error);
   }
 };
 
-
 const removeTodo = async (todo) => {
   try {
-  
-    await axios.delete(`https://api-todolist-meih.onrender.com/todo/${todo._id}`);
-    todos.value = todos.value.filter(t => t._id !== todo._id); 
+    // Enviar requisição DELETE para remover a tarefa
+    await axios.delete(`http://localhost:3000/todo/${todo._id}`);
+    todos.value = todos.value.filter(t => t._id !== todo._id); // Remove a tarefa da lista
   } catch (error) {
     console.error('Erro ao deletar tarefa:', error);
   }
@@ -59,9 +71,11 @@ watch(nome, (newVal) => {
   localStorage.setItem('nome', newVal);
 });
 
+// Carrega as tarefas quando o componente é montado
 onMounted(() => {
   nome.value = localStorage.getItem('nome') || '';
   todos.value = JSON.parse(localStorage.getItem('todos')) || [];
+  fetchTodos();  // Chama para carregar as tarefas do servidor
 });
 </script>
 
@@ -106,11 +120,11 @@ onMounted(() => {
           <div v-for="todo in todos_asc" :key="todo._id" :class="['todo-item', todo.done && 'done']">
             <label>
               <input type="checkbox" v-model="todo.done"/>
-              <span :class="['bubble', todo.category]"></span>
+              <span :class="['bubble', todo.type]"></span> <!-- Alterei para 'type' que é a categoria -->
             </label>
 
             <div class="todo-content">
-              <input type="text" v-model="todo.content"/>
+              <input type="text" v-model="todo.tarefa"/> <!-- Alterei para 'tarefa' que é o nome do campo -->
             </div>
 
             <div class="actions">
@@ -126,4 +140,3 @@ onMounted(() => {
 <style scoped>
 
 </style>
-
